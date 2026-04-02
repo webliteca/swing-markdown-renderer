@@ -18,7 +18,7 @@ A Swing `EditorKit` for rendering Markdown inside `JEditorPane`. Uses [commonmar
 
 ```xml
 <dependency>
-    <groupId>ca.weblite</groupId>
+    <groupId>weblite.ca</groupId>
     <artifactId>swing-markdown-renderer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
