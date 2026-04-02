@@ -1,5 +1,7 @@
 # Swing Markdown Renderer
 
+[![Maven Central](https://img.shields.io/maven-central/v/ca.weblite/swing-markdown-renderer)](https://central.sonatype.com/artifact/ca.weblite/swing-markdown-renderer)
+
 A Swing `EditorKit` for rendering Markdown inside `JEditorPane`. Uses [commonmark-java](https://github.com/commonmark/commonmark-java) to parse Markdown into HTML, which is then displayed through Swing's built-in HTML rendering engine.
 
 ## Features
@@ -18,10 +20,16 @@ A Swing `EditorKit` for rendering Markdown inside `JEditorPane`. Uses [commonmar
 
 ```xml
 <dependency>
-    <groupId>weblite.ca</groupId>
+    <groupId>ca.weblite</groupId>
     <artifactId>swing-markdown-renderer</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1.5</version>
 </dependency>
+```
+
+**Gradle:**
+
+```groovy
+implementation 'ca.weblite:swing-markdown-renderer:0.1.5'
 ```
 
 ### Rendering Markdown
