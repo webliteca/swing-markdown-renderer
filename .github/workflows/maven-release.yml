@@ -1,0 +1,59 @@
+name: Build and Deploy to Maven Central
+
+on:
+  push:
+    tags:
+      - 'v*'  # e.g. v1.0.0
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # 1) Extract version from tag (v1.0.0 -> 1.0.0)
+      - name: Determine Release Version
+        run: |
+          # GITHUB_REF_NAME is something like "v1.0.0"
+          # Strip leading "v" to get "1.0.0"
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      # 2) Set up JDK + GPG for signing
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          server-id: 'central'
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          overwrite-settings: true
+
+      # 3) Update all modules' version in POM to match the release version
+      - name: Set Maven project version
+        run: |
+          mvn versions:set \
+            -DnewVersion="${{ env.VERSION }}" \
+            -DprocessAllModules=true \
+            -DgenerateBackupPoms=false \
+            --batch-mode \
+            -ntp
+
+    # 4) Build and Deploy artifacts to Maven Central
+      - name: Build and Deploy
+        run: mvn -B clean deploy --batch-mode -ntp -Psign-artifacts
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+
+      # 5) Optional verification message
+      - name: Verify
+        if: always()
+        run: |
+          echo "Build completed. If successful, your artifacts should be staged and automatically released on Sonatype."
